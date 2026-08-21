@@ -1,60 +1,119 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# VaultKeep 🛡️
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+> A fully local, self-hosted password manager built with Laravel. Designed for individuals who want complete control over their credential storage without trusting third-party cloud vendors.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 📋 Project Description
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+VaultKeep is a web-based password manager that runs entirely on your local machine. It stores encrypted credentials in a local database, with **no cloud sync, no third-party authentication, and no internet dependency** after installation. 
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## 🎯 Objectives
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+* Provide a secure, self-hosted alternative to commercial cloud password managers.
+* Ensure all sensitive data is encrypted at rest and never leaves the local machine.
+* Offer a modern, responsive UI comparable to commercial alternatives.
+* Demonstrate solid Laravel architecture (MVC, service classes, form requests, Eloquent relationships).
+* Build in security best practices from the ground up (encryption, hashing, CSRF/XSS/SQLi protection, auto-lock).
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-## Laravel Sponsors
+## 📦 Scope
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### In Scope
+* Single-user or multi-user local accounts (registration/login on the same machine).
+* Full CRUD for password vault entries with encryption.
+* Password generator with strength/entropy analysis.
+* Organization via folders, categories, tags, and favorites.
+* Import/export capabilities (CSV, encrypted JSON backup).
+* Dashboard with vault health metrics.
+* Activity logging.
+* Configurable settings (theme, auto-logout, generator defaults).
 
-### Premium Partners
+### Out of Scope (For Now)
+* Browser extension integration.
+* Mobile native applications.
+* Cross-device sync.
+* Biometric authentication.
+* Team or shared vaults.
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+---
 
-## Contributing
+## ⚠️ Limitations
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+* **Single-machine deployment only:** No built-in synchronization mechanism.
+* **Local security dependency:** Security relies on the host machine's physical and OS-level security.
+* **No email password recovery:** Recovery must be handled via a locally stored recovery mechanism or manual database intervention.
 
-## Code of Conduct
+---
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## ⚙️ Requirements
 
-## Security Vulnerabilities
+### Functional Requirements
+| ID | Requirement Description |
+| :--- | :--- |
+| **FR1** | Users can register and log in with a hashed master account password. |
+| **FR2** | Users can create, read, update, and delete vault entries. |
+| **FR3** | Vault entry passwords are encrypted before storage and decrypted only on demand. |
+| **FR4** | Users can generate strong passwords with configurable rules. |
+| **FR5** | Users can organize entries via folders, categories, tags, and favorites. |
+| **FR6** | Users can search and filter vault entries. |
+| **FR7** | Users can import and export vault data. |
+| **FR8** | Users can view a dashboard summarizing vault health. |
+| **FR9** | System logs key account and vault activity. |
+| **FR10** | Users can configure application settings (theme, auto-lock timer, etc.). |
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Non-Functional Requirements
+| ID | Requirement Description |
+| :--- | :--- |
+| **NFR1** | Application must run fully offline after installation. |
+| **NFR2** | All stored credentials must be encrypted using strong, industry-standard encryption. |
+| **NFR3** | Account passwords must be hashed with Argon2id. |
+| **NFR4** | UI must be responsive across desktop and tablet screen sizes. |
+| **NFR5** | Sessions must auto-lock after a configurable period of inactivity. |
+| **NFR6** | Application must protect against CSRF, XSS, and SQL injection. |
+| **NFR7** | Codebase must follow Laravel MVC conventions and be maintainable. |
 
-## License
+---
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-# localhost_password_manager
+## 👤 User Stories
+
+* As a user, I want to register an account so I can access my personal vault.
+* As a user, I want to log in securely so only I can see my stored credentials.
+* As a user, I want to add a new password entry so I can store my login credentials safely.
+* As a user, I want to generate a strong random password so I don't reuse weak passwords.
+* As a user, I want to organize entries into folders/tags so I can find them quickly.
+* As a user, I want the app to auto-lock after inactivity so my vault isn't exposed if I walk away.
+* As a user, I want to export my vault as an encrypted backup so I can restore it later.
+* As a user, I want to see a dashboard of weak/duplicate passwords so I can improve my security posture.
+
+---
+
+## 🗺️ Product Backlog & Development Timeline
+
+| Sprint | Focus Area | Estimated Duration |
+| :--- | :--- | :--- |
+| **Sprint 1** | Project Planning | 1 session |
+| **Sprint 2** | System Analysis & Design | 1–2 sessions |
+| **Sprint 3** | Project Setup (Laravel, DB, Breeze) | 1 session |
+| **Sprint 4** | Authentication | 1–2 sessions |
+| **Sprint 5** | Password Vault CRUD | 2–3 sessions |
+| **Sprint 6** | Password Generator | 1 session |
+| **Sprint 7** | Search & Organization | 1–2 sessions |
+| **Sprint 8** | Security Hardening | 2 sessions |
+| **Sprint 9** | Import/Export | 1–2 sessions |
+| **Sprint 10** | Dashboard | 1–2 sessions |
+| **Sprint 11** | Activity Logs | 1 session |
+| **Sprint 12** | Settings | 1 session |
+| **Sprint 13** | Testing | 2 sessions |
+| **Sprint 14** | Documentation | 1 session |
+
+---
+
+## 📌 Sprint 1 Summary
+
+We have successfully defined the project's identity, scope, requirements, user stories, backlog, and timeline. No code has been written yet—this serves as the foundational reference point for the entire project.
+
+*Does this planning document match your vision for VaultKeep? Let me know if you would like to make any adjustments before we move on to **Sprint 2 – System Analysis and Design**!*
