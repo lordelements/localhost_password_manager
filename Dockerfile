@@ -18,7 +18,11 @@ FROM php:8.3-fpm-bookworm AS app
 WORKDIR /var/www/html
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends nginx sqlite3 libsqlite3-dev \
+    && apt-get install -y --no-install-recommends \
+        nginx \
+        sqlite3 \
+        libsqlite3-dev \
+        libonig-dev \
     && docker-php-ext-install pdo_sqlite mbstring bcmath exif pcntl \
     && rm -rf /var/lib/apt/lists/* \
     && mkdir -p /run/php /var/log/nginx
