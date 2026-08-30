@@ -11,6 +11,8 @@ use App\Models\VaultEntry;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Hash;
 
 class VaultEntryController extends Controller
 {
@@ -74,11 +76,40 @@ class VaultEntryController extends Controller
         return view('vault-entries.edit', compact('vaultEntry', 'folders', 'categories', 'tags'));
     }
 
+    // public function update(UpdateVaultEntryRequest $request, VaultEntry $vaultEntry): RedirectResponse
+    // {
+    //     $this->authorizeOwnership($request, $vaultEntry);
+
+    //     $vaultEntry->fill($request->validated())->save();
+
+    //     if ($request->has('tags')) {
+    //         $vaultEntry->tags()->sync($request->input('tags', []));
+    //     }
+
+    //     $request->user()->activityLogs()->create([
+    //         'action' => 'password_updated',
+    //         'description' => "Updated entry \"{$vaultEntry->website_name}\"",
+    //     ]);
+
+    //     return redirect()
+    //         ->route('vault-entries.show', $vaultEntry)
+    //         ->with('status', 'Vault entry updated.');
+    // }
+
     public function update(UpdateVaultEntryRequest $request, VaultEntry $vaultEntry): RedirectResponse
     {
         $this->authorizeOwnership($request, $vaultEntry);
 
-        $vaultEntry->fill($request->validated())->save();
+        $data = $request->validated();
+
+        // If the password field was left blank, don't overwrite the
+        // existing encrypted password — "blank" means "no change",
+        // not "set to empty string".
+        if (! $request->filled('password_encrypted')) {
+            unset($data['password_encrypted']);
+        }
+
+        $vaultEntry->update($data);
 
         if ($request->has('tags')) {
             $vaultEntry->tags()->sync($request->input('tags', []));
@@ -109,6 +140,42 @@ class VaultEntryController extends Controller
         return redirect()
             ->route('vault-entries.index')
             ->with('status', 'Vault entry deleted.');
+    }
+
+
+
+    /**
+     * Re-verify the user's account password, then return the decrypted
+     * vault entry password as JSON. This is called via fetch() from the
+     * show view, not a normal page load — matches the secure reveal flow
+     * designed in Sprint 2 (re-auth -> decrypt -> log -> return).
+     */
+    public function reveal(Request $request, VaultEntry $vaultEntry): JsonResponse
+    {
+        $this->authorizeOwnership($request, $vaultEntry);
+
+        $request->validate([
+            'password' => ['required', 'string'],
+        ]);
+
+        // Re-check the account's master password against the currently
+        // logged-in user's stored hash. This does NOT re-log them in —
+        // it's a lightweight confirmation, similar to Laravel's built-in
+        // "confirm password" screens.
+        if (! Hash::check($request->input('password'), $request->user()->password)) {
+            return response()->json(['message' => 'Incorrect password.'], 422);
+        }
+
+        $request->user()->activityLogs()->create([
+            'action' => 'password_revealed',
+            'description' => "Revealed password for \"{$vaultEntry->website_name}\"",
+        ]);
+
+        return response()->json([
+            // password_encrypted is auto-decrypted here because of the
+            // 'encrypted' cast on the model — this returns plaintext.
+            'password' => $vaultEntry->password_encrypted,
+        ]);
     }
 
     protected function authorizeOwnership(Request $request, VaultEntry $vaultEntry): void

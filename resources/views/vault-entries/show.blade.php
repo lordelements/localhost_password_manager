@@ -66,15 +66,32 @@
                     </div>
 
                     <div>
-                        <div class="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1">Password</div>
-                        <div class="flex items-center justify-between bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700/60 rounded-xl px-3.5 py-2">
-                            <span class="text-sm font-mono text-gray-800 dark:text-gray-200">
-                                <span x-show="!show">••••••••••••</span>
-                                <span x-show="show" x-cloak>{{ $vaultEntry->password_encrypted }}</span>
-                            </span>
-                            <button @click="show = !show" type="button" class="text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 transition-colors bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 px-2.5 py-1 rounded-lg shadow-2xs" x-text="show ? 'Hide' : 'Reveal'"></button>
-                        </div>
-                    </div>
+    <div class="text-sm text-gray-500">Password</div>
+    <div x-data="passwordReveal({{ $vaultEntry->id }})">
+        <div class="flex items-center gap-3">
+            <span x-show="!revealed">••••••••••••</span>
+            <span x-show="revealed" x-text="password"></span>
+            <button @click="revealed ? hide() : openPrompt()" class="text-sm text-indigo-600" x-text="revealed ? 'Hide' : 'Reveal'"></button>
+        </div>
+
+        <div x-show="promptOpen" x-cloak
+            class="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
+            @keydown.escape.window="promptOpen = false">
+            <div class="bg-white rounded-lg p-6 w-full max-w-sm" @click.outside="promptOpen = false">
+                <h3 class="font-medium text-gray-800 mb-3">Confirm your password</h3>
+                <input type="password" x-model="confirmPassword" @keydown.enter="submit()"
+                    class="block w-full rounded-md border-gray-300 shadow-sm mb-2"
+                    placeholder="Account password" autofocus>
+                <p x-show="error" x-text="error" class="text-sm text-red-600 mb-2"></p>
+                <div class="flex gap-3 mt-3">
+                    <button @click="submit()" class="px-4 py-2 bg-indigo-600 text-white rounded-md text-sm">Confirm</button>
+                    <button @click="promptOpen = false" class="text-sm text-gray-600">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 pb-6 border-b border-gray-100 dark:border-gray-700/60">
@@ -137,4 +154,64 @@
             </div>
         </div>
     </div>
+
+    @push('scripts')
+<script>
+function passwordReveal(entryId) {
+    return {
+        revealed: false,
+        promptOpen: false,
+        confirmPassword: '',
+        password: '',
+        error: '',
+        hideTimer: null,
+
+        openPrompt() {
+            this.error = '';
+            this.confirmPassword = '';
+            this.promptOpen = true;
+        },
+
+        async submit() {
+            this.error = '';
+            try {
+                const response = await fetch(`/vault-entries/${entryId}/reveal`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({ password: this.confirmPassword }),
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    this.error = data.message || 'Something went wrong.';
+                    return;
+                }
+
+                this.password = data.password;
+                this.revealed = true;
+                this.promptOpen = false;
+
+                // Auto re-hide after 20 seconds, matching the sequence
+                // diagram from Sprint 2 (step 9-10: reveal, then auto-clear).
+                clearTimeout(this.hideTimer);
+                this.hideTimer = setTimeout(() => this.hide(), 20000);
+            } catch (e) {
+                this.error = 'Network error. Please try again.';
+            }
+        },
+
+        hide() {
+            this.revealed = false;
+            this.password = '';
+            clearTimeout(this.hideTimer);
+        },
+    };
+}
+</script>
+@endpush
 </x-app-layout>

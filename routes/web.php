@@ -24,6 +24,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::resource('vault-entries', VaultEntryController::class);
+    Route::post('/vault-entries/{vaultEntry}/reveal', [VaultEntryController::class, 'reveal'])
+    ->name('vault-entries.reveal');
+    
     Route::resource('folders', FolderController::class);
     Route::resource('categories', CategoryController::class);
     Route::resource('tags', TagController::class);
