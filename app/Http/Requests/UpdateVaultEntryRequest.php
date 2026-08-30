@@ -8,7 +8,6 @@ class UpdateVaultEntryRequest extends StoreVaultEntryRequest
     {
         $rules = parent::rules();
 
-        // $rules['password_encrypted'] = ['sometimes', 'string', 'max:1024'];
         $rules['password_encrypted'] = ['nullable', 'string', 'max:1024'];
 
         return $rules;
