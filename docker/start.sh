@@ -21,6 +21,8 @@ php artisan migrate --force
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
+php artisan config:clear
+php artisan cache:clear
 
 # Start PHP-FPM in the background, then keep Nginx in the foreground.
 php-fpm -D

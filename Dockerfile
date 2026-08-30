@@ -36,6 +36,9 @@ RUN chmod +x /usr/local/bin/start.sh \
     && mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views storage/logs bootstrap/cache database \
     && chown -R www-data:www-data storage bootstrap/cache database
 
+RUN php artisan config:clear
+
 EXPOSE 10000
 
 CMD ["/usr/local/bin/start.sh"]
+
